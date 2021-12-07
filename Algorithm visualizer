@@ -1,0 +1,99 @@
+from tkinter import *
+from tkinter import ttk
+import random
+from bubblesort import bubble_sort
+from seletionsort import selectionsort
+window=Tk()
+window.title('Alorithm Visualizer')
+window.maxsize(900,1000)
+window.configure(background='black')
+#variables and functions
+
+alg=StringVar()
+data=[]
+
+def drawdata(data,colorArray):
+    canvas.delete('all')
+    cheight=380
+    cwidth=600
+    xwidth=cwidth/len(data)+1
+    gap=8
+    
+    normalizedata = [ i / max(data) for i in data]
+    for i,height in enumerate(normalizedata):
+        #top left
+         x0 = i * xwidth  + gap
+         y0 = cheight - height * 340
+        #bottom right
+         x1 = (i + 1) * xwidth 
+         y1 = cheight
+
+         canvas.create_rectangle(x0, y0, x1, y1, fill=colorArray[i])
+         canvas.create_text(x0+2, y0, anchor=SW, text=str(data[i]))
+
+         window.update()
+
+
+def Generate():
+    global data
+    try:
+        minVal = int(minEnt.get())
+    except:
+        minVal = 1
+    try:
+        maxVal = int(maxEnt.get())
+    except:
+        maxVal = 10
+    try:
+        size = int(sizeEnt.get())
+    except:
+        size = 10
+
+    if minVal < 0 : minVal = 0
+    if minVal > maxVal : minVal, maxVal = maxVal, minVal
+
+    data = []
+    for _ in range(size):
+        data.append(random.randrange(minVal, maxVal+1))
+
+    
+    drawdata(data,['black' for x in range(len(data))])      #[black,black,black....]
+    print(alg.get())
+
+def Visualize():
+    global data
+    if(algMenu.get()=='Bubble Sort'):
+        bubble_sort(data,drawdata,timeTick=0.6)
+    if(algMenu.get()=='Selection Sort'):
+        selectionsort(data,drawdata,timeTick=0.1)
+
+#frame
+ip_frame=Frame(window,width=600,height=200,bg='grey')
+ip_frame.grid(row=0,column=0,padx=5,pady=5)
+
+#canvas
+canvas=Canvas(window,width=600,height=380,bg='grey')
+canvas.grid(row=1,column=0,padx=10,pady=5)
+
+#UIA
+Label(ip_frame, text="Algorithm: ", bg='grey').grid(row=0, column=2, padx=5, pady=5, sticky=W)
+algMenu = ttk.Combobox(ip_frame, textvariable=alg, values=['Bubble Sort', 'Merge Sort','Selection Sort'])
+algMenu.grid(row=0, column=3, padx=5, pady=5)
+
+Button(ip_frame, text="Visualize", command=Visualize, bg='red').grid(row=0, column=4, padx=5, pady=5)
+#Row[1]
+Label(ip_frame, text="Size ", bg='grey').grid(row=0, column=0, padx=5, pady=5, sticky=W)
+sizeEnt = Entry(ip_frame)
+sizeEnt.grid(row=0, column=1, padx=5, pady=5, sticky=W)
+
+Label(ip_frame, text="Min Value ", bg='grey').grid(row=1, column=0, padx=5, pady=5, sticky=W)
+minEnt = Entry(ip_frame)
+minEnt.grid(row=1, column=1, padx=5, pady=5, sticky=W)
+
+Label(ip_frame, text="Max Value ", bg='grey').grid(row=1, column=2, padx=5, pady=5, sticky=W)
+maxEnt = Entry(ip_frame)
+maxEnt.grid(row=1, column=3, padx=5, pady=5, sticky=W)
+Button(ip_frame, text="Generate", command=Generate, bg='white').grid(row=1, column=4, padx=5, pady=5)
+
+
+window.mainloop()
